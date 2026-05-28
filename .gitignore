@@ -1,0 +1,12 @@
+#directory
+.vs/
+bin/
+bin-int/
+*.user
+*.sln
+
+#file
+*.ini
+premake5.lua
+*.bat
+
