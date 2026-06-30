@@ -16,10 +16,10 @@ public:
 
   struct QueueFamilyIndices {
     std::optional<uint32_t> GraphicsFamily;
-
+    std::optional<uint32_t> PresentFamily;
     bool isComplete()
     {
-      return GraphicsFamily.has_value();
+      return GraphicsFamily.has_value() && PresentFamily.has_value();
     }
   };
 
@@ -53,6 +53,9 @@ private:
   VkDevice m_vkLogicDevice;
 
   VkQueue m_vkGraphicsQueue;
+  VkQueue m_vkPresentQueue;
+
+  VkSurfaceKHR m_vkSurface;
 
 
 
