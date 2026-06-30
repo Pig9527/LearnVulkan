@@ -6,7 +6,8 @@ bin-int/
 *.sln
 *.vcxproj
 
+
 #file
 *.ini
-
+*.spv
 

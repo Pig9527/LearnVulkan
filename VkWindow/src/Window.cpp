@@ -3,15 +3,19 @@
 #include <GLFW/glfw3.h>
 #include <functional>
 #include <iostream>
-#include <vector>
+
 #include <set>
 #include <cstring>
+#include <fstream>
+
 static bool s_Runing = true;
 
 const std::vector<const char*> validationLayers = {
   "VK_LAYER_KHRONOS_validation"
 };
-
+const std::vector<const char*> deviceExtensions = {
+  VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
 
 #ifdef DEBUG
 
@@ -276,6 +280,8 @@ Window::Window(const WindowInfo& info)
 
   vkGetDeviceQueue(m_vkLogicDevice, m_QueueFamilyIndices.GraphicsFamily.value(), 0, &m_vkGraphicsQueue);
   vkGetDeviceQueue(m_vkLogicDevice, m_QueueFamilyIndices.PresentFamily.value(), 0, &m_vkPresentQueue);
+
+  CreateGraphicPipeline();
 }
 
 Window::~Window()
@@ -305,4 +311,82 @@ void Window::Run()
     glfwPollEvents();
 
   }
+}
+
+void Window::CreateGraphicPipeline()
+{
+
+  ShaderCode vertexCode{};
+  ShaderCode fragmentCode{};
+  bool resultV = readFile("shader/vert.spv", vertexCode);
+  bool resultF = readFile("shader/frag.spv", fragmentCode);
+  if (!resultV || !resultF)
+  {
+    return;
+  }
+  std::cout << "vertex size :" << vertexCode.CodeSize << std::endl;
+  std::cout << "fragmnet size :" << fragmentCode.CodeSize << std::endl;
+
+  VkShaderModuleCreateInfo shaderModuleInfo{};
+  shaderModuleInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  shaderModuleInfo.codeSize = vertexCode.CodeSize;
+  shaderModuleInfo.pCode = reinterpret_cast<const uint32_t*>(vertexCode.Buff);
+
+  VkResult result = vkCreateShaderModule(m_vkLogicDevice, &shaderModuleInfo, nullptr, &m_vkVertexShader);
+  if (result != VK_SUCCESS)
+  {
+    std::cout << "failed to create vertex shader" << std::endl;
+  }
+
+  shaderModuleInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  shaderModuleInfo.codeSize = fragmentCode.CodeSize;
+  shaderModuleInfo.pCode = reinterpret_cast<uint32_t*>(fragmentCode.Buff);
+  result = vkCreateShaderModule(m_vkLogicDevice, &shaderModuleInfo, nullptr, &m_vkFragmentShader);
+
+  if (result != VK_SUCCESS)
+  {
+    std::cout << "failed to create Fragment shader" << std::endl;
+  }
+
+
+  VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+  vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+  vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+  vertShaderStageInfo.module = m_vkVertexShader;
+  vertShaderStageInfo.pName = "main";
+
+  VkPipelineShaderStageCreateInfo fragmentShaderStageInfo{};
+  fragmentShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+  fragmentShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+  fragmentShaderStageInfo.module = m_vkFragmentShader;
+  fragmentShaderStageInfo.pName = "main";
+
+
+  VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo ,fragmentShaderStageInfo };
+
+  vkDestroyShaderModule(m_vkLogicDevice, m_vkFragmentShader, nullptr);
+  vkDestroyShaderModule(m_vkLogicDevice, m_vkVertexShader, nullptr);
+
+  delete vertexCode.Buff;
+  delete fragmentCode.Buff;
+}
+
+bool Window::readFile(const std::string& filePath, ShaderCode& code)
+{
+
+  std::ifstream file(filePath, std::ios::ate | std::ios::binary);
+  if (!file.is_open())
+  {
+    return false;
+  }
+  size_t fileSize = file.tellg();
+
+  code.Buff = new char[fileSize];
+  code.CodeSize = fileSize;
+
+  file.seekg(0);
+  file.read(code.Buff, fileSize);
+
+  file.close();
+  return true;
 }

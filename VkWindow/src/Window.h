@@ -2,6 +2,7 @@
 #include <string>
 #include <vulkan/vulkan.h>
 #include <optional>
+#include <vector>
 struct GLFWwindow;
 
 class Window
@@ -12,6 +13,13 @@ public:
   int Width;
   int Height;
   std::string Tile;
+  };
+
+
+  struct ShaderCode
+  {
+    char* Buff;
+    int CodeSize;
   };
 
   struct QueueFamilyIndices {
@@ -30,9 +38,15 @@ public:
 
   void Run();
 
-  GLFWwindow* GetNativeWindow() { return m_WindowData.m_Window; }
 
+
+  GLFWwindow* GetNativeWindow() { return m_WindowData.m_Window; }
 private:
+  void CreateGraphicPipeline();
+
+  bool readFile(const std::string& filePaths,ShaderCode& code);
+private:
+
   struct WindowData
   {
   GLFWwindow* m_Window;
@@ -57,6 +71,7 @@ private:
 
   VkSurfaceKHR m_vkSurface;
 
-
+  VkShaderModule m_vkVertexShader;
+  VkShaderModule m_vkFragmentShader;
 
 };
