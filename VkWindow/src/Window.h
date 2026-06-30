@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include <vulkan/vulkan.h>
 struct GLFWwindow;
 
 class Window
@@ -31,6 +31,8 @@ private:
 
 
   WindowData m_WindowData;
+
+  VkInstance m_vkInstance;
 
 
 };
