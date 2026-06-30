@@ -19,8 +19,8 @@ project "VkWindow"
     cppdialect "c++17"
     staticruntime "on"
 
-    targetdir ("../bin/"..outputdir.."/%{prj.name}")
-    objdir ("../bin-int/"..outputdir.."/%{prj.name}")
+    targetdir ("bin/"..outputdir.."/%{prj.name}")
+    objdir ("sbin-int/"..outputdir.."/%{prj.name}")
 
     files
     {

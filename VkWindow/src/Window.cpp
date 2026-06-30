@@ -92,7 +92,7 @@ Window::Window(const WindowInfo& info)
 
   VkApplicationInfo applicationInfo{};
   applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  applicationInfo.apiVersion = VK_VERSION_1_3;
+  applicationInfo.apiVersion = VK_API_VERSION_1_3;
   applicationInfo.pApplicationName = "vulkan";
   applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
   applicationInfo.pEngineName = "no engine";
