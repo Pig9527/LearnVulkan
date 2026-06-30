@@ -216,6 +216,7 @@ Window::Window(const WindowInfo& info)
 
       if (indices.isComplete())
       {
+        m_QueueFamilyIndices = indices;
         m_vkPhysicalDevice = device;
         break;
       }
@@ -228,10 +229,35 @@ Window::Window(const WindowInfo& info)
     std::cout << " failed to find a suitable GPU" << std::endl;
   }
 
+
+  VkDeviceQueueCreateInfo queueCreateInfo{};
+  queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+  queueCreateInfo.queueFamilyIndex = m_QueueFamilyIndices.GraphicsFamily.value();
+  queueCreateInfo.queueCount = 1;
+  float queuePriority = 1.0f;
+  queueCreateInfo.pQueuePriorities = &queuePriority;
+
+  VkPhysicalDeviceFeatures deviceFeatures{};
+  VkDeviceCreateInfo deviceCreateInfo{};
+  deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
+  deviceCreateInfo.queueCreateInfoCount = 1;
+  deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+  deviceCreateInfo.enabledExtensionCount = 0;
+
+  result = vkCreateDevice(m_vkPhysicalDevice, &deviceCreateInfo, nullptr, &m_vkLogicDevice);
+  if (result != VK_SUCCESS)
+  {
+    std::cout << "failed to create logic device" << std::endl;
+  }
+
+  vkGetDeviceQueue(m_vkLogicDevice, m_QueueFamilyIndices.GraphicsFamily.value(), 0, &m_vkGraphicsQueue);
 }
 
 Window::~Window()
 {
+  vkDestroyDevice(m_vkLogicDevice,nullptr);
+
   if (enableValidationLayers)
   {
     auto DestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_vkInstance, "vkDestroyDebugUtilsMessengerEXT");

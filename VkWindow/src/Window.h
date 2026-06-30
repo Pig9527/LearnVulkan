@@ -48,5 +48,12 @@ private:
 
   VkPhysicalDevice m_vkPhysicalDevice;
 
+  QueueFamilyIndices m_QueueFamilyIndices;
+
+  VkDevice m_vkLogicDevice;
+
+  VkQueue m_vkGraphicsQueue;
+
+
 
 };
