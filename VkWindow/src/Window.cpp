@@ -176,6 +176,58 @@ Window::Window(const WindowInfo& info)
   }
 
 
+  uint32_t deviceCount = 0;
+  vkEnumeratePhysicalDevices(m_vkInstance, &deviceCount, nullptr);
+
+  if (deviceCount == 0)
+  {
+    std::cout << "failed to find GPUs with vulkan support" << std::endl;
+    return;
+  }
+
+  std::vector<VkPhysicalDevice> devices(deviceCount);
+
+  vkEnumeratePhysicalDevices(m_vkInstance, &deviceCount, devices.data());
+
+  for (const VkPhysicalDevice& device :devices)
+  {
+    VkPhysicalDeviceProperties deviceProperties;
+    vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
+    std::cout << deviceProperties.deviceName << std::endl;
+
+    VkPhysicalDeviceFeatures deviceFeatures;
+    vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+    int i = 0;
+    for (const VkQueueFamilyProperties& queueFamily : queueFamilies)
+    {
+      QueueFamilyIndices indices{};
+      if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+      {
+        indices.GraphicsFamily = i;
+      }
+
+      if (indices.isComplete())
+      {
+        m_vkPhysicalDevice = device;
+        break;
+      }
+
+      i++;
+    }
+  }
+  if (m_vkPhysicalDevice == VK_NULL_HANDLE)
+  {
+    std::cout << " failed to find a suitable GPU" << std::endl;
+  }
+
 }
 
 Window::~Window()

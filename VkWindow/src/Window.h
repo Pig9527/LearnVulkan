@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vulkan/vulkan.h>
+#include <optional>
 struct GLFWwindow;
 
 class Window
@@ -11,6 +12,15 @@ public:
   int Width;
   int Height;
   std::string Tile;
+  };
+
+  struct QueueFamilyIndices {
+    std::optional<uint32_t> GraphicsFamily;
+
+    bool isComplete()
+    {
+      return GraphicsFamily.has_value();
+    }
   };
 
 
@@ -35,6 +45,8 @@ private:
   VkInstance m_vkInstance;
 
   VkDebugUtilsMessengerEXT m_DebugMessenger;
+
+  VkPhysicalDevice m_vkPhysicalDevice;
 
 
 };
