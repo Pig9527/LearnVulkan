@@ -8,9 +8,9 @@ class Window
 public:
   struct WindowInfo
   {
-	int Width;
-	int Height;
-	std::string Tile;
+  int Width;
+  int Height;
+  std::string Tile;
   };
 
 
@@ -25,7 +25,7 @@ public:
 private:
   struct WindowData
   {
-	GLFWwindow* m_Window;
+  GLFWwindow* m_Window;
   };
 
 
@@ -33,6 +33,8 @@ private:
   WindowData m_WindowData;
 
   VkInstance m_vkInstance;
+
+  VkDebugUtilsMessengerEXT m_DebugMessenger;
 
 
 };
