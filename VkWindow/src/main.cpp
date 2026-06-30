@@ -7,7 +7,6 @@
 #include <iostream>
 #include <vulkan/vulkan.h>
 #include <vector>
-#include <spdlog/spdlog.h>
 
 
 
@@ -32,7 +31,6 @@ int main(int argc, char* argv[])
   uint32_t extensionCount = 0;
   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 
-  spdlog::info("spdlog::extension:{0}", extensionCount);
 
   VkApplicationInfo appInfo = {
     VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -74,7 +72,7 @@ int main(int argc, char* argv[])
   VkSurfaceKHR Surface;
 
 
-  GLFWwindow* window = glfwCreateWindow(1920, 1080, "LearnVulkan", nullptr, nullptr);
+  GLFWwindow* window = glfwCreateWindow(1280, 720, "LearnVulkan", nullptr, nullptr);
 
   glfwCreateWindowSurface(Instance, window, nullptr, &Surface);
 
