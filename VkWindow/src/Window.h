@@ -3,6 +3,8 @@
 #include <vulkan/vulkan.h>
 #include <optional>
 #include <vector>
+#include "VulkanRenderer.h"
+
 struct GLFWwindow;
 
 class Window
@@ -52,7 +54,7 @@ private:
   GLFWwindow* m_Window;
   };
 
-
+  std::shared_ptr<VulkanRenderer> m_Renderer;
 
   WindowData m_WindowData;
 

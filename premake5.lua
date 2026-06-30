@@ -20,7 +20,7 @@ project "VkWindow"
     staticruntime "on"
 
     targetdir ("bin/"..outputdir.."/%{prj.name}")
-    objdir ("sbin-int/"..outputdir.."/%{prj.name}")
+    objdir ("bin-int/"..outputdir.."/%{prj.name}")
 
     files
     {

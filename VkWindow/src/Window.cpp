@@ -64,6 +64,10 @@ Window::Window(const WindowInfo& info)
   glfwSetWindowCloseCallback(window, gflwCloseFunc);
 
 
+  m_Renderer = VulkanRenderer::Create();
+
+  m_Renderer->CreateInstance();
+
   uint32_t layerCount;
   vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -89,7 +93,8 @@ Window::Window(const WindowInfo& info)
       }
     }
   }
-
+  VkResult result = VK_SUCCESS;
+  #if 0
   VkApplicationInfo applicationInfo{};
   applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   applicationInfo.apiVersion = VK_API_VERSION_1_3;
@@ -145,7 +150,7 @@ Window::Window(const WindowInfo& info)
     std::cout << *(glfwExtension + i) << std::endl;
   }
 
-  VkResult result = vkCreateInstance(&createInfo, nullptr, &m_vkInstance);
+  result = vkCreateInstance(&createInfo, nullptr, &m_vkInstance);
   if (result != VK_SUCCESS)
   {
     switch (result)
@@ -161,8 +166,9 @@ Window::Window(const WindowInfo& info)
       break;
     }
   }
+#endif
 
-
+  m_vkInstance = m_Renderer->GetInstance();
   if (!enableValidationLayers)
   {
     return;
@@ -174,6 +180,16 @@ Window::Window(const WindowInfo& info)
     std::cout << "vkCreateDebugUtilsMessengerEXT func not found" << std::endl;
     return;
   }
+
+  VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+  debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+  debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+    VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+  debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+    | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+  debugCreateInfo.pfnUserCallback = DebugCallback;
+  debugCreateInfo.pUserData = nullptr;
+
   result = CreateDebugUtilMessengerEXTfunc(m_vkInstance, &debugCreateInfo, nullptr, &m_DebugMessenger);
   if (result != VK_SUCCESS)
   {
@@ -298,8 +314,9 @@ Window::~Window()
   }
 
   vkDestroySurfaceKHR(m_vkInstance,m_vkSurface,nullptr);
+#if 0
   vkDestroyInstance(m_vkInstance,nullptr);
-
+#endif
   glfwDestroyWindow(m_WindowData.m_Window);
   glfwTerminate();
 }
