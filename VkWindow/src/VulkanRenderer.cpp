@@ -46,6 +46,11 @@ VulkanRenderer::VulkanRenderer(GLFWwindow *window)
 
 VulkanRenderer::~VulkanRenderer()
 {
+
+  vkDestroySemaphore(m_vkDevice,m_ImageAvailableSemaphore,nullptr);
+  vkDestroySemaphore(m_vkDevice,m_RenderFinishedSemaphore,nullptr);
+  vkDestroyFence(m_vkDevice,m_inFlightFence,nullptr);
+
   vkDestroyCommandPool(m_vkDevice, m_vkCommandPool, nullptr);
 
   for (auto framebuffer : m_SwapChainFrameBuffers)
@@ -473,6 +478,20 @@ void VulkanRenderer::CreateCommandBuffer()
   if (vkAllocateCommandBuffers(m_vkDevice, &allocInfo, &m_vkCommandBuffer) != VK_SUCCESS)
   {
     std::cout << "failed to allocate command buffers" << std::endl;
+  }
+}
+
+void VulkanRenderer::CreateSyncObject()
+{
+  VkSemaphoreCreateInfo semaphoreInfo{};
+  semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+  VkFenceCreateInfo fenceInfo{};
+  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+  if (vkCreateSemaphore(m_vkDevice, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore) != VK_SUCCESS || vkCreateSemaphore(m_vkDevice, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore) != VK_SUCCESS || vkCreateFence(m_vkDevice, &fenceInfo, nullptr, &m_inFlightFence) != VK_SUCCESS)
+  {
+    std::cout << "failed to create semaphores" << std::endl;
   }
 }
 

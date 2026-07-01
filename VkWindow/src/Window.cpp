@@ -53,6 +53,7 @@ Window::Window(const WindowInfo& info)
   m_Renderer->CreateFrameBuffers();
   m_Renderer->CreateCommandPool();
   m_Renderer->CreateCommandBuffer();
+  m_Renderer->CreateSyncObject();
 }
 
 Window::~Window()
