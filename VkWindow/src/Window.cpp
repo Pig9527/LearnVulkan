@@ -48,6 +48,7 @@ Window::Window(const WindowInfo& info)
   m_Renderer->CreateDevice();
   m_Renderer->CreateSwapChain();
   m_Renderer->CreateImageView();
+  m_Renderer->CreateRenderPass();
   m_Renderer->CreateGraphicPipeline();
 }
 
