@@ -38,6 +38,7 @@ public:
   void CreateSwapChain();
   void CreateImageView();
   void CreateGraphicPipeline();
+  void CreateRenderPass();
 
   VkInstance GetInstance() { return m_vkInstance; }
 
@@ -66,6 +67,7 @@ private:
   VkFormat m_SwapChainImageFromat;
   VkExtent2D m_SwapChainImageExtent;
   std::vector<VkImageView> m_SwapChainImageViews;
+  VkRenderPass m_vkRenderPass;
   VkPipelineLayout m_vkPipeLineLayout;
   VkShaderModule m_vkVertexModule;
   VkShaderModule m_vkFragmentModule;
