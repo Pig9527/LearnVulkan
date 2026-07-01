@@ -37,6 +37,7 @@ public:
   void CreateDeviceQueueFamily();
   void CreateShader();
   void CreateSwapChain();
+  void CreateImageView();
 
   VkInstance GetInstance() { return m_vkInstance; }
 
@@ -64,6 +65,7 @@ private:
   std::vector<VkImage> m_SwapChainImages;
   VkFormat m_SwapChainImageFromat;
   VkExtent2D m_SwapChainImageExtent;
+  std::vector<VkImageView> m_SwapChainImageViews;
   VkShaderModule m_vkVertexModule;
   VkShaderModule m_vkFragmentModule;
 };
