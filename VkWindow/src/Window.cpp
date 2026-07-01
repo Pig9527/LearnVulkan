@@ -46,6 +46,7 @@ Window::Window(const WindowInfo& info)
   m_Renderer->CreateSurface();
   m_Renderer->CreatePhysicalDevice();
   m_Renderer->CreateDevice();
+  m_Renderer->CreateSwapChain();
   m_Renderer->CreateShader();
 }
 

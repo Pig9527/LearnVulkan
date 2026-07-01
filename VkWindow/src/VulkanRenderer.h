@@ -2,6 +2,7 @@
 #include <vulkan/vulkan.h>
 #include <memory>
 #include <optional>
+#include <vector>
 struct GLFWwindow;
 
 struct QueueFamilyIndices
@@ -13,6 +14,13 @@ struct QueueFamilyIndices
   {
     return GrpahicFamily.has_value() && PresentFamily.has_value();
   }
+};
+
+struct SwapChainSupportDetails
+{
+  VkSurfaceCapabilitiesKHR capabilities;
+  std::vector<VkSurfaceFormatKHR> Formats;
+  std::vector<VkPresentModeKHR> PresentModes;
 };
 
 class VulkanRenderer
@@ -28,6 +36,7 @@ public:
   void CreateDevice();
   void CreateDeviceQueueFamily();
   void CreateShader();
+  void CreateSwapChain();
 
   VkInstance GetInstance() { return m_vkInstance; }
 
@@ -36,6 +45,12 @@ public:
 private:
   bool isSuitableDevice(VkPhysicalDevice physicalDevice);
   QueueFamilyIndices FindQueueFamily(VkPhysicalDevice physicalDevice);
+  bool CheckDeviceExtensSupport(VkPhysicalDevice physicalDevice);
+  SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice physicalDevice);
+  VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
+  VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
+  VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
+
 private:
   GLFWwindow *m_widnow;
   VkInstance m_vkInstance;
@@ -45,6 +60,10 @@ private:
   VkQueue m_vkGraphicsQueue;
   VkQueue m_vkPresentQueue;
   VkSurfaceKHR m_vkSurface;
+  VkSwapchainKHR m_vkSwapChain;
+  std::vector<VkImage> m_SwapChainImages;
+  VkFormat m_SwapChainImageFromat;
+  VkExtent2D m_SwapChainImageExtent;
   VkShaderModule m_vkVertexModule;
   VkShaderModule m_vkFragmentModule;
 };
