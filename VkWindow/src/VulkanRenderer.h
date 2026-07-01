@@ -39,6 +39,7 @@ public:
   void CreateImageView();
   void CreateGraphicPipeline();
   void CreateRenderPass();
+  void CreateFrameBuffers();
 
   VkInstance GetInstance() { return m_vkInstance; }
 
@@ -72,4 +73,6 @@ private:
   VkPipeline m_vkGraphicPipeLine;
   VkShaderModule m_vkVertexModule;
   VkShaderModule m_vkFragmentModule;
+
+  std::vector<VkFramebuffer> m_SwapChainFrameBuffers;
 };

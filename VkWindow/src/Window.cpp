@@ -50,6 +50,7 @@ Window::Window(const WindowInfo& info)
   m_Renderer->CreateImageView();
   m_Renderer->CreateRenderPass();
   m_Renderer->CreateGraphicPipeline();
+  m_Renderer->CreateFrameBuffers();
 }
 
 Window::~Window()

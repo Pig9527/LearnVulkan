@@ -46,6 +46,10 @@ VulkanRenderer::VulkanRenderer(GLFWwindow *window)
 
 VulkanRenderer::~VulkanRenderer()
 {
+  for (auto framebuffer : m_SwapChainFrameBuffers)
+  {
+    vkDestroyFramebuffer(m_vkDevice, framebuffer, nullptr);
+  }
 
   vkDestroyPipeline(m_vkDevice, m_vkGraphicPipeLine, nullptr);
   vkDestroyPipelineLayout(m_vkDevice, m_vkPipeLineLayout, nullptr);
@@ -417,6 +421,29 @@ void VulkanRenderer::CreateRenderPass()
   if (vkCreateRenderPass(m_vkDevice, &renderPassInfo, nullptr, &m_vkRenderPass) != VK_SUCCESS)
   {
     std::cout << "failed to create Render Pass" << std::endl;
+  }
+}
+
+void VulkanRenderer::CreateFrameBuffers()
+{
+  m_SwapChainFrameBuffers.resize(m_SwapChainImageViews.size());
+  for (size_t i = 0; i < m_SwapChainImageViews.size(); i++)
+  {
+    VkImageView attachments[] = {
+        m_SwapChainImageViews[i]};
+    VkFramebufferCreateInfo frameBufferInfo{};
+    frameBufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    frameBufferInfo.renderPass = m_vkRenderPass;
+    frameBufferInfo.attachmentCount = 1;
+    frameBufferInfo.pAttachments = attachments;
+    frameBufferInfo.width = m_SwapChainImageExtent.width;
+    frameBufferInfo.height = m_SwapChainImageExtent.height;
+    frameBufferInfo.layers = 1;
+
+    if (vkCreateFramebuffer(m_vkDevice, &frameBufferInfo, nullptr, &m_SwapChainFrameBuffers[i]) != VK_SUCCESS)
+    {
+      std::cout << "failed to create vkFrame buffer" << std::endl;
+    }
   }
 }
 
