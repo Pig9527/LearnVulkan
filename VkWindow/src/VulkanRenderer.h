@@ -44,6 +44,9 @@ public:
   void CreateCommandBuffer();
   void CreateSyncObject();
 
+  void DrawFrame();
+
+  void WaitIdle();
   void RecordCommandBuffer(VkCommandBuffer buffer,uint32_t imageIndex);
 
   VkInstance GetInstance() { return m_vkInstance; }

@@ -47,9 +47,9 @@ VulkanRenderer::VulkanRenderer(GLFWwindow *window)
 VulkanRenderer::~VulkanRenderer()
 {
 
-  vkDestroySemaphore(m_vkDevice,m_ImageAvailableSemaphore,nullptr);
-  vkDestroySemaphore(m_vkDevice,m_RenderFinishedSemaphore,nullptr);
-  vkDestroyFence(m_vkDevice,m_inFlightFence,nullptr);
+  vkDestroySemaphore(m_vkDevice, m_ImageAvailableSemaphore, nullptr);
+  vkDestroySemaphore(m_vkDevice, m_RenderFinishedSemaphore, nullptr);
+  vkDestroyFence(m_vkDevice, m_inFlightFence, nullptr);
 
   vkDestroyCommandPool(m_vkDevice, m_vkCommandPool, nullptr);
 
@@ -488,11 +488,68 @@ void VulkanRenderer::CreateSyncObject()
 
   VkFenceCreateInfo fenceInfo{};
   fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
   if (vkCreateSemaphore(m_vkDevice, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore) != VK_SUCCESS || vkCreateSemaphore(m_vkDevice, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore) != VK_SUCCESS || vkCreateFence(m_vkDevice, &fenceInfo, nullptr, &m_inFlightFence) != VK_SUCCESS)
   {
     std::cout << "failed to create semaphores" << std::endl;
   }
+}
+
+void VulkanRenderer::DrawFrame()
+{
+  vkWaitForFences(m_vkDevice, 1, &m_inFlightFence, VK_TRUE, UINT64_MAX);
+  vkResetFences(m_vkDevice, 1, &m_inFlightFence);
+  uint32_t imageIndex;
+  vkAcquireNextImageKHR(m_vkDevice, m_vkSwapChain, UINT64_MAX, m_ImageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+  vkResetCommandBuffer(m_vkCommandBuffer, 0);
+  RecordCommandBuffer(m_vkCommandBuffer, imageIndex);
+
+  VkSubmitInfo submitInfo{};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  VkSemaphore waitSemaphores[] = {m_ImageAvailableSemaphore};
+  VkPipelineStageFlags waitStage[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+  submitInfo.waitSemaphoreCount - 1;
+  submitInfo.pWaitSemaphores = waitSemaphores;
+  submitInfo.pWaitDstStageMask = waitStage;
+  submitInfo.commandBufferCount =1;
+  submitInfo.pCommandBuffers = &m_vkCommandBuffer;
+
+  VkSemaphore signalSemaphores[] ={m_RenderFinishedSemaphore};
+  submitInfo.signalSemaphoreCount = 1;
+  submitInfo.pSignalSemaphores = signalSemaphores;
+
+  if(vkQueueSubmit(m_vkGraphicsQueue,1,&submitInfo,m_inFlightFence) != VK_SUCCESS)
+  {
+    std::cout<<"failed to submit draw command buffer"<<std::endl;
+  }
+
+  // VkSubpassDependency dependency{};
+  // dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+  // dependency.dstSubpass =0;
+  // dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  // dependency.srcAccessMask = 0;
+  // dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  // dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+  VkPresentInfoKHR presentInfo{};
+  presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+  presentInfo.waitSemaphoreCount = 1;
+  presentInfo.pWaitSemaphores = signalSemaphores;
+
+  VkSwapchainKHR swapChains[] ={m_vkSwapChain};
+  presentInfo.swapchainCount =1 ;
+  presentInfo.pSwapchains = swapChains;
+  presentInfo.pImageIndices =&imageIndex;
+  presentInfo.pResults = nullptr;
+
+  vkQueuePresentKHR(m_vkPresentQueue,&presentInfo);
+}
+
+void VulkanRenderer::WaitIdle()
+{
+  vkDeviceWaitIdle(m_vkDevice);
 }
 
 void VulkanRenderer::RecordCommandBuffer(VkCommandBuffer buffer, uint32_t imageIndex)

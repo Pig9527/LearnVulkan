@@ -67,6 +67,7 @@ void Window::Run()
   while (s_Runing)
   {
     glfwPollEvents();
-
+    m_Renderer->DrawFrame();
   }
+  m_Renderer->WaitIdle();
 }
