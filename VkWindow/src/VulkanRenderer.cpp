@@ -46,6 +46,12 @@ VulkanRenderer::VulkanRenderer(GLFWwindow *window)
 
 VulkanRenderer::~VulkanRenderer()
 {
+
+  for (auto imageView : m_SwapChainImageViews)
+  {
+    vkDestroyImageView(m_vkDevice, imageView, nullptr);
+  }
+
   vkDestroySwapchainKHR(m_vkDevice, m_vkSwapChain, nullptr);
   vkDestroyDevice(m_vkDevice, nullptr);
 
@@ -349,7 +355,7 @@ void VulkanRenderer::CreateSwapChain()
 void VulkanRenderer::CreateImageView()
 {
   m_SwapChainImageViews.resize(m_SwapChainImages.size());
-  for(size_t i=0;i<m_SwapChainImages.size();i++)
+  for (size_t i = 0; i < m_SwapChainImages.size(); i++)
   {
     VkImageViewCreateInfo imageViewCreateInfo{};
     imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -366,14 +372,12 @@ void VulkanRenderer::CreateImageView()
     imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
     imageViewCreateInfo.subresourceRange.layerCount = 1;
 
-    if(vkCreateImageView(m_vkDevice,&imageViewCreateInfo,nullptr,&m_SwapChainImageViews[i]) != VK_SUCCESS)
+    if (vkCreateImageView(m_vkDevice, &imageViewCreateInfo, nullptr, &m_SwapChainImageViews[i]) != VK_SUCCESS)
     {
-      std::cout <<"Failed to create swapchain Image View"<<std::endl;
+      std::cout << "Failed to create swapchain Image View" << std::endl;
     }
   }
-
 }
-
 
 void VulkanRenderer::CreateDeviceQueueFamily()
 {
