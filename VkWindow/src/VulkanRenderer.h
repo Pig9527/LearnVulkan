@@ -40,6 +40,10 @@ public:
   void CreateGraphicPipeline();
   void CreateRenderPass();
   void CreateFrameBuffers();
+  void CreateCommandPool();
+  void CreateCommandBuffer();
+
+  void RecordCommandBuffer(VkCommandBuffer buffer,uint32_t imageIndex);
 
   VkInstance GetInstance() { return m_vkInstance; }
 
@@ -75,4 +79,7 @@ private:
   VkShaderModule m_vkFragmentModule;
 
   std::vector<VkFramebuffer> m_SwapChainFrameBuffers;
+
+  VkCommandPool m_vkCommandPool;
+  VkCommandBuffer m_vkCommandBuffer;
 };

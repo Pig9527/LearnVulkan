@@ -51,6 +51,8 @@ Window::Window(const WindowInfo& info)
   m_Renderer->CreateRenderPass();
   m_Renderer->CreateGraphicPipeline();
   m_Renderer->CreateFrameBuffers();
+  m_Renderer->CreateCommandPool();
+  m_Renderer->CreateCommandBuffer();
 }
 
 Window::~Window()
