@@ -85,9 +85,11 @@ private:
   std::vector<VkFramebuffer> m_SwapChainFrameBuffers;
 
   VkCommandPool m_vkCommandPool;
-  VkCommandBuffer m_vkCommandBuffer;
+  std::vector<VkCommandBuffer> m_vkCommandBuffer;
 
-  VkSemaphore m_ImageAvailableSemaphore;
-  VkSemaphore m_RenderFinishedSemaphore;
-  VkFence m_inFlightFence;
+  std::vector<VkSemaphore> m_ImageAvailableSemaphore;
+  std::vector<VkSemaphore> m_RenderFinishedSemaphore;
+  std::vector<VkFence> m_inFlightFence;
+
+  uint32_t m_CurrentFrame = 0;
 };
